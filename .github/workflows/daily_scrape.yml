@@ -1,3 +1,47 @@
-GitHub Actions workflow for daily fantasy baseball scraper
-daily_scrape.yml
-Done
+name: Daily Fantasy Baseball Scraper
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # 11 PM Eastern (3 AM UTC)
+  workflow_dispatch:        # Allows manual trigger from GitHub website
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out your repository files
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Step 3: Install required libraries
+      - name: Install dependencies
+        run: pip install requests requests-oauthlib pandas
+
+      # Step 4: Write the saved Yahoo token from GitHub Secrets
+      - name: Restore Yahoo token
+        env:
+          YAHOO_TOKEN: ${{ secrets.YAHOO_TOKEN }}
+        run: echo "$YAHOO_TOKEN" > .yahoo_token.json
+
+      # Step 5: Run the scraper
+      - name: Run scraper
+        env:
+          YAHOO_CLIENT_ID:     ${{ secrets.YAHOO_CLIENT_ID }}
+          YAHOO_CLIENT_SECRET: ${{ secrets.YAHOO_TOKEN }}
+        run: python scraper.py
+
+      # Step 6: Save the updated CSV back to your repository
+      - name: Commit updated data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "Daily standings snapshot $(date +%Y-%m-%d)"
+          git push
