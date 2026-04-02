@@ -336,6 +336,7 @@ def main():
     print(f" {date.today()}")
     print("="*60 + "\n")
 
+    build_dim_team(LEAGUE_ID)
     rows = get_standings(LEAGUE_ID)
     df   = save_snapshot(rows)
 
