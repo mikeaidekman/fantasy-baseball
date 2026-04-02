@@ -24,8 +24,8 @@ from requests_oauthlib import OAuth2Session
 # ── CONFIGURATION ────────────────────────────────────────────────────────
 LEAGUE_ID           = "35457"
 
-YAHOO_CLIENT_ID     = "YOUR_CLIENT_ID"      # ← paste your Client ID here
-YAHOO_CLIENT_SECRET = "YOUR_CLIENT_SECRET"  # ← paste your Client Secret here
+YAHOO_CLIENT_ID     = "dj0yJmk9U1pHSzJmaDMwaVFYJmQ9WVdrOVV6bERNWHBtWkVVbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PWIw"
+YAHOO_CLIENT_SECRET = "b9c4bcdc638f5ea1ad84bddefa40b62438e2aeea"
 
 DATA_DIR     = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
