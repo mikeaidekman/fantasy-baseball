@@ -289,6 +289,45 @@ def save_snapshot(rows: list[dict]):
     print(f"✓ Daily backup saved → {daily_file}")
     return df
 
+# ── TEAM LOOKUP TABLE ────────────────────────────────────────────────────
+DIM_TEAM_CSV = DATA_DIR / "dim_team.csv"
+
+def build_dim_team(league_id: str):
+    """
+    Pulls the current team roster from Yahoo API and saves
+    dim_team.csv mapping team_id to team_name.
+    Overwrites every run so renames are always captured.
+    """
+    oauth    = get_oauth_session()
+    base     = "https://fantasysports.yahooapis.com/fantasy/v2"
+    game_key = f"mlb.l.{league_id}"
+
+    print("Fetching team lookup table...")
+    resp = oauth.get(f"{base}/league/{game_key}/teams?format=json")
+    resp.raise_for_status()
+    data = resp.json()
+
+    raw_teams = data["fantasy_content"]["league"][1]["teams"]
+
+    rows = []
+    for i in range(raw_teams["count"]):
+        t         = raw_teams[str(i)]["team"][0]
+        team_id   = next(x["team_id"] for x in t if "team_id" in x)
+        team_name = next(x["name"]    for x in t if "name"    in x)
+        team_url  = next((x["url"]    for x in t if "url"     in x), None)
+
+        rows.append({
+            "team_id":   team_id,
+            "team_name": team_name,
+            "team_url":  team_url,
+        })
+
+    df = pd.DataFrame(rows)
+    df.to_csv(DIM_TEAM_CSV, index=False)
+    print(f"✓ dim_team.csv updated → {DIM_TEAM_CSV}")
+    return df
+
+
 
 # ── MAIN ─────────────────────────────────────────────────────────────────
 def main():
