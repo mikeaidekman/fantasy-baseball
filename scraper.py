@@ -183,7 +183,8 @@ def get_standings(league_id: str) -> list[dict]:
         body = t[1]
 
         # Team name
-        name = next(x["name"] for x in meta if "name" in x)
+        name    = next(x["name"]    for x in meta if "name"    in x)
+        team_id = next(x["team_id"] for x in meta if "team_id" in x)
 
         # Rank info — may or may not be present early in season
         tstands = body.get("team_standings", {})
@@ -212,6 +213,7 @@ def get_standings(league_id: str) -> list[dict]:
                 rows.append({
                     "snapshot_date": snapshot_date,
                     "league_id":     league_id,
+                    "team_id":       team_id,
                     "team_name":     name,
                     "rank":          rank,
                     "wins":          wins,
@@ -229,6 +231,7 @@ def get_standings(league_id: str) -> list[dict]:
             rows.append({
                 "snapshot_date": snapshot_date,
                 "league_id":     league_id,
+                "team_id":       team_id,
                 "team_name":     name,
                 "rank":          rank,
                 "wins":          wins,
